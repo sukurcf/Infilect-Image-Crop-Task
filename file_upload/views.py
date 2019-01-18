@@ -20,7 +20,8 @@ class FileView(APIView):
         if file_serializer.is_valid():
             file_serializer.save()
             img = file_serializer['file']
-            print(img.value)
+            if not str(img.value).endswith(('.jpeg', 'jpg', '.png')):
+                return Response('Please upload an image file only')
             img = os.getcwd()+img.value
             print(img)
             pts = eval(file_serializer['coordinates'].value)
