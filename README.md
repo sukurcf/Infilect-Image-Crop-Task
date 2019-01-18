@@ -1,3 +1,5 @@
+You can use the `CropAnImageDirectlyNoAPI.py` to crop the image directly without needeing a REST API.
+
 # Infilect-Image-Crop-Task
 
 Django REST API for cropping image
@@ -17,4 +19,4 @@ Django REST API for cropping image
         * coordinates : type - string (a string in the form of input mentioned in Input section) above.
     5. The original and cropped images will be saved on the /media/ folder on server and base64 encoded string of the cropped image will be sent as response.
     6. Copy the response and run the `DecodeAPIresponseToPNGimage.py` and provide appropriate inputs to save the encoded string as image in your local.
-    7. If you need to crop the image directly without an API, you can try **`CropAnImageDirectlyNoAPI.py`**.
+    7. If you need to crop the image directly without an API, you can try `CropAnImageDirectlyNoAPI.py`.
