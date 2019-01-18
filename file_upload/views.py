@@ -1,39 +1,36 @@
-import base64
-import os
-
-from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
-import numpy as np
-
 from imageprocessing.settings import MEDIA_ROOT
 from .serializers import FileSerializer
 
+import base64
+import os
+import numpy as np
 import cv2
 
-class FileView(APIView):
 
+class FileView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        file_serializer = FileSerializer(data = request.data)
+        file_serializer = FileSerializer(data=request.data)
 
         if file_serializer.is_valid():
             file_serializer.save()
             imgpath = file_serializer['file']
             if not str(imgpath.value).endswith(('.jpeg', 'jpg', '.png')):
                 return Response('Please upload an image file only')
-            imgpath = os.getcwd()+imgpath.value
+            imgpath = os.getcwd() + imgpath.value
             pts = eval(file_serializer['coordinates'].value)
             cropped_image_path = cropfunction(imgpath, pts)
             with open(cropped_image_path, 'rb') as imgfile:
                 encoded_string = base64.b64encode(imgfile.read())
-                # return Response(file_serializer.data, status=status.HTTP_201_CREATED)
                 return Response(encoded_string)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 def cropfunction(imgpath, pts):
     img = cv2.imread(imgpath)
@@ -47,7 +44,6 @@ def cropfunction(imgpath, pts):
     res = cv2.bitwise_and(img, img, mask=mask)
     rect = cv2.boundingRect(pts)
     cropped = res[rect[1]:rect[1] + rect[3], rect[0]:rect[0] + rect[2]]
-    image_path = os.path.join(MEDIA_ROOT,os.path.splitext(imgpath)[0]+'_cropped.png')
+    image_path = os.path.join(MEDIA_ROOT, os.path.splitext(imgpath)[0] + '_cropped.png')
     cv2.imwrite(image_path, cropped)
     return image_path
-
